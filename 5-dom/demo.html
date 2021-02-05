@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <!-- <script src="./../jquery.js"></script> -->
+    <script src="jQuery.1.0.2.js"></script>
+    <style>
+        #box {
+            width: 300px;
+            height: 100px;
+            background: red;
+        }
+    </style>
+</head>
+
+<body>
+    <ul id="proxy">
+        <li>主页</li>
+        <li>文章</li>
+        <li>公告</li>
+        <li>简介</li>
+    </ul>
+    <div id="box"></div>
+</body>
+
+</html>
+<script>
+    // DOM0 DOM2级事件模型
+    // DOM 0级事件：在第4代的Web浏览器中出现，现在所有的浏览器都支持
+    // 通过JavaScript指定事件处理程序的传统方式。
+    // 就是将一个函数赋值给一个事件处理程序属性
+    // 每个元素都有相对应的事件处理程序属性，例如onclick，通过将事件函数引用赋值给程序属性来绑定事件，这个是DOM0级事件出现的概念
+
+    // 我们试着在浏览器把一个DOM节点输出来看一下：
+    // var obj = document.body;
+    // for (var key in obj) {
+    //     console.log(`属性:${key},值：${obj[key]}`)
+    // }
+    // onclick的默认值是null，当我们给onclick赋予了一个函数，就可以作为一个事件函数存在，这个是DOM0级事件规定可以这样做的
+
+    // DOM 2级事件
+    // 2级DOM中增加定义了DOM事件模型的概念
+    // DOM2级事件规定的事件流包括3个阶段：事件捕获阶段、处于目标阶段和事件冒泡阶段。
+    // 首先发生的是事件捕获为截获事件提供机会，然后的是实际的目标接收事件，最后一个阶段是事件冒泡阶段，可以在这个阶段对事件做出响应
+    // 看图说明
+    // 假设我们在DOM结构里面有(text)的这样一个标签，给这个标签绑定了一个点击事件，那我们在点击这个标签的时候是怎么执行事件的呢？
+    // 首先是经过捕获阶段，会先找到window，再找到document，再找到body，再找到div，最后再找到text这个标签，这个就是所谓的目标接受事件阶段
+    // 找到这个标签之后我们要给它冒泡上去
+    // 什么是冒泡呢？我们来看一下，我们是在冒泡阶段做出响应的，也就是说在冒泡阶段才会这些事件处理函数
+    // 冒泡是自身冒泡到父元素，父元素又冒泡到它的父元素上面，是这样的一个过程，text冒泡到div上然后调用div的onclick事件，再冒泡到body上看看body有没有绑定点击事件
+    // 如果有就调用这个点击事件，然后再冒泡到document和window上面去，这个就是所谓的事件冒泡阶段
+    // 我们会在这个阶段做出事件的响应
+    // 那为什么呢？
+    // 因为text是div的子元素，点击text就相当于也是在点击div和body，div它的事件发生了响应，也会检索一个body是不是也绑定了点击事件，如果有我们也会对body绑定的事件做出响应，这个就是DOM2级事件流里面的事件捕获和事件冒泡的过程。
+
+    // DOM2级事件定义了一个方法addEventListener()，用于处理指定事件处理程序
+    // 它接受三个参数：处理的事件名称；事件处理程序；一个指定是在事件冒泡还是事件捕获阶段处理的布尔值。
+    // true则为事件捕获阶段处理；false(默认)为在事件冒泡阶段处理
+
+    // 事件委托
+    // 利用事件冒泡，只指定一个事件处理程序来管理某一类型的所有事件
+    // 为什么要用事件委托？
+    // 提升整体运行性能
+    // 原理
+    // 我们知道事件冒泡是事件从最深的节点开始，然后逐步向上传播事件
+    // 如下图，页面上有一个节点树ul>li，若给最里面的li加一个clic点击k事件，那么这个事件就会一层一层的往外执行，执行顺序li>ul.
+    // 有这样一个机制，我们给最外面的ul加点击事件，那么里面的li做点击事件的时候，都会冒泡到外层的ul上，所以都会触发，这就是事件委托
+    // 委托它们父级代为执行事件，这样就没有必要给每一个li都写一个点击事件，只给它们的父级ul绑定一个就好了
+    // 这样相对于给每一个li绑定点击事件是提升了不少性能的
+    
+    var elemUl = document.getElementById('proxy');
+    var elemLi = elemUl.getElementsByTagName('li');
+    for (var i = 0; i < elemLi.length; i++) {
+        elemLi[i].onclick = function () {
+            console.log('click:' + this.innerHTML);
+        }
+    }
+    // 这里是通过for循环给每一个li绑定一个onclick事件，我们在学了DOM点击事件之后应该知道onclick本身是作为li元素节点上面的一个事件处理属性存在。
+    // 我们只是把事件处理函数的值赋给它，当我们点击li元素的时候就会调用这个事件函数。来点击看一下有没有触发事件：
+    // 点击截图
+    
+    // 下面来通过事件代理的方式来实现，来优化性能：
+    var proxy = document.getElementById('proxy');
+    proxy.onclick = function (event) { // 通过event获取事件的状态，
+        var target = event.target; // 当前点击的元素
+        if (target.nodeName.toLowerCase() == 'li') {
+            console.log('click:' + target.innerHTML);
+        }
+    }
+
+    // API
+    // bind
+    // 语法: $(selector).bind(event,data,function)
+    // 定义和用法：bind()方法为被选元素添加一个或多个事件处理程序，并规定事件发生时运行的函数
+    // delegate
+    // 语法:$(selector).delegate(child,event,data,function)
+    // 定义和用法：delegate()方法为被选元素的子元素，添加一个或多个事件处理程序，并规定这些事件发生时运行的函数
+    // on  (bind和delegate的集合体)
+    // 语法： $(selector).on(event,child,data,function)
+    // 定义和用法：on()方法在被选元素及子元素上添加一个或多个事件处理程序
+    // 自jQuery版本1.7起，on()方法是bind()和delegate()方法的新的替代品，该方法给API带来很多便利，推荐使用该方法
+
+    // jQuery事件处理机制解决了那些问题：
+    // 不同浏览器下的事件兼容
+    // 一个事件类型添加多个事件函数，一次添加多个事件类型的函数
+    // 简洁的定义方式
+    // 允许自定义事件
+</script>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>jQuery表单验证</title>
+    <script src="jquery.js"></script>
+    <script src="myValidate.js"></script>
+    <style>
+        h3 {
+            text-align: center;
+            font-size: 24px;
+        }
+        table {
+            margin: 0 auto;
+            border: 0;
+        }
+        table tr {
+            height: 40px;
+            border: 0;
+        }
+        table tr td {
+            padding: 0 14px;
+            border: 1px solid #999;
+        }
+        .tips {
+            color: red;
+            margin: 0 5px;
+        }
+        .btn {
+             display: block;
+             height: 40px;
+             width: 80px;
+             margin: 10px auto;
+        }
+    </style>
+</head>
+<body>
+    <h3>表单验证</h3>
+    <form name="form" id="form" method="get" novalidate="novalidate">
+        <table border="1">
+            <tbody>
+                <tr>
+                    <td>身份证号码:</td>
+                    <td><input type="text" id="card" name="card" ></td>
+                </tr>
+                <tr>
+                    <td>手机号码:</td>
+                    <td><input type="text" id="phone" name="phone"></td>
+                </tr>
+                <tr>
+                    <td>电子邮箱:</td>
+                    <td><input type="text" id="email" name="email"></td>
+                </tr>
+                <tr>
+                    <td>年龄(18-55):</td>
+                    <td><input type="text" id="age" name="age"></td>
+                </tr>
+            </tbody>
+        </table>
+        <input type="submit" class="btn" name="submitBtn" id="submitBtn" value="验证">
+    </form>
+</body>
+</html>
+<script>
+    $(function () {
+        $("#form").validate({
+            rules: {
+                card: {
+                    required: true,
+                    card: true,
+                },
+                phone: {
+                    required: true,
+                    phone: true,
+                },
+                email: {
+                    required: true,
+                    email: true,
+                },
+                age: {
+                    required: true,
+                    min: 18,
+                    max: 55,
+                },
+            },
+            messages: {
+                card: {
+                    required:"请输入您的身份证号码",
+                    card: "身份证号码格式不正确",
+                },
+                phone: {
+                    required: "请输入您的手机号码",
+                    phone: "手机号码格式不正确",
+                },
+                email: {
+                    required: "请输入您的邮箱",
+                    email: "邮箱格式不正确",
+                },
+                age: {
+                    required: "请输入您的年龄",
+                    min: "可以输入的最小年龄是18",
+                    max: "可以输入的最大年龄是55",
+                },
+            },
+        });
+    });
+</script>
