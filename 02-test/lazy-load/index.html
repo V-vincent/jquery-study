@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>jQuery图片懒加载</title>
+  <script src="jquery.js"></script>
+  <style>
+    li {
+      list-style: none;
+      height: 320px;
+    }
+    ul {
+      width: 500px;
+      margin: 10px auto;
+    }
+  </style>
+</head>
+
+<body>
+  <ul id="loading">
+    <li><img src="" data-src="img/001.jpg"></li>
+    <li><img src="" data-src="img/002.jpg"></li>
+    <li><img src="" data-src="img/003.jpg"></li>
+    <li><img src="" data-src="img/004.jpg"></li>
+    <li><img src="" data-src="img/005.jpg"></li>
+    <li><img src="" data-src="img/001.jpg"></li>
+    <li><img src="" data-src="img/002.jpg"></li>
+    <li><img src="" data-src="img/003.jpg"></li>
+    <li><img src="" data-src="img/004.jpg"></li>
+    <li><img src="" data-src="img/005.jpg"></li>
+  </ul>
+</body>
+
+</html>
+<script>
+  $(window).on('scroll', function () {
+    loading();
+  });
+
+  function loading() {
+    $('#loading img').each(function () {
+      var $img = $(this);
+      if (!isLoaded($img) && checkImgShowed($img)) {
+        console.log(`加载${$img.attr('data-src')}`);
+        loadImg($img);
+      }
+    })
+  }
+
+  function checkImgShowed($img) {
+    var scrollTop = $(window).scrollTop();
+    var winHeight = window.innerHeight;
+    var imgTop = $img.offset().top;
+
+    if (imgTop < (scrollTop + winHeight) && imgTop > scrollTop) return true;
+    else return false;
+  }
+
+  function isLoaded($img) {
+    return $img.attr('src') === $img.attr('data-src');
+  }
+
+  function loadImg($img) {
+    $img.attr('src', $img.attr('data-src'));
+  }
+
+  loading();
+</script>

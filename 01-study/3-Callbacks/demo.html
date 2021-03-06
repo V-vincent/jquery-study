@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+
+<body>
+  <script src="Underscore.js"></script>
+  <!-- <script src="../../00-source/jquery.js"></script> -->
+</body>
+
+</html>
+<script>
+  // $.Callbacks用于管理函数队列
+  // 通过add添加处理函数到队列中，通过fire去执行这些处理函数
+  // $.Callbacks是在jQuery内部使用的，如为.ajax,$.Deferred等组件提高基础功能的函数。它也可以用在类似功能的一些组件中，如自己开发的插件。
+  // 通过调用$.Callbacks获取到一个Callbacks实例，add向内部队列添加函数，fire依次执行队列里的函数
+  // var cb = $.Callbacks();
+  // cb.add(function () {
+  //     console.log('add one');
+  // });
+  // cb.fire();
+
+  // Callbacks参数的特定功能：
+  // $.Callbacks通过字符串参数的形式，支持4种特定功能:
+  // once  unique  stopOnFalse memory
+
+  // 参数once:函数队列只执行一次
+  // var cb = $.Callbacks();
+  // var cb = $.Callbacks('once');
+  // cb.add(function () {
+  //     console.log('add');
+  // });
+  // cb.fire();
+  // cb.fire();
+
+  // 参数unique:往内部队列添加的函数保持唯一，不能重复添加
+  // var cb = $.Callbacks();
+  // var cb = $.Callbacks('unique');
+  // function demo() {
+  //     console.log('demo');
+  // }
+  // cb.add(demo, demo);
+  // cb.fire();
+
+  // 参数stopOnFalse:内部队列里的函数是依次执行的，当某个函数的返回值是false时，停止继续执行剩下的函数。
+  // var cb = $.Callbacks('stopOnFalse');
+  // cb.add(function(){
+  //     console.log('one');
+  //     return false; // 不添加参数stopOnFalse还时会执行下一个函数
+  // }, function(){
+  //     console.log('two');
+  // });
+  // cb.fire();
+
+  // 参数memory:当函数队列fire一次过后，内部会记录当前fire的参数。当下次调用add时，会把记录的参数传递给新添加的函数并立即执行这个新添加的函数
+  // var cb = $.Callbacks('memory');
+  // cb.add(function () {
+  //     console.log('add one');
+  // });
+  // cb.fire(); // add one
+  // cb.add(function(){
+  //     console.log('add two');
+  // }); // 不添加参数时不执行这个新添加的函数
+
+  // 概念解读：
+  // 从事件函数了解Callbacks：事件通常与函数配合使用，这样就可以通过发生的事件来驱动函数的执行。
+  // 原则：一个事件对应一个事件函数，即一对一
+  // 在一个事件对应多个事件函数的情况下，后者会覆盖前者，如：
+  // Element.onclick = function (){
+  //     console.log('onclick1');
+  // }
+  // Element.onclick = function (){
+  //     console.log('onclick2');
+  // }
+  // 那能不能一对多呢？可以，下面这个就是一对多的事件模型：
+  // 把事件存储在callbacks这个数组中，触发onclick事件时通过forEach去遍历，来执行数组里面的函数，这样就建立起了一对多的事件模型了
+  // var callbacks = [function(){},function(){},function(){}];
+  // Element.onclick = function(){
+  //     var _this = this;
+  //     callbacks.forEach(function(fn){
+  //         fn.call(_this);
+  //     })
+  // }
+  // 回到Callbacks身上，Callbacks并不只是要创建一个数组，把所有的事件函数都丢到里面去
+  // 它还有其他更多更灵活的功能：即Add() 往容器中添加处理函数
+  // Fire() 按照添加函数的顺序依次执行处理函数，不是事件驱动型，而是通过fire去控制事件是否依次执行
+  // 还有另外一个就是参数控制：
+  // stopOnFalse 可选，执行某个处理函数是，返回值为false，则终止后续处理函数执行
+  // Once 默认，fir调用后关闭容器，add添加进容器的处理函数将不会执行
+  // Memory 可选，fire调用后开发容器，add添加进容器的处理函数将会立即执行
+
+  // 可以传入一些参数，按一定的规则来控制在这个容器里面函数的执行情况
+  var cb = _.callbacks('memory');
+  cb.add(function () {
+    console.log('1');
+  });
+  cb.add(function () {
+    console.log('3');
+  });
+  cb.fire();
+  cb.add(function () {
+    console.log('2');
+  });
+</script>
